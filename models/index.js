@@ -1,2 +1,2 @@
-// module.exports.Token = require('./token.model');
+module.exports.Image = require('./Image');
 module.exports.User = require('./User');
