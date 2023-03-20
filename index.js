@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const helmet = require("helmet");
 const routes = require('./routes');
 const mongoose = require('mongoose');
 
@@ -9,6 +10,9 @@ const app = express();
 
 // enable cors
 app.use(cors());
+
+// use helmet for more security
+app.use(helmet());
 
 // parse json request body
 app.use(express.json());
