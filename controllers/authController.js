@@ -1,4 +1,5 @@
 const User = require('../models/User');
+const bcrypt = require('bcrypt');
 
 const login = async (req, res) => {
     const { username, password } = req.body;
@@ -11,7 +12,9 @@ const login = async (req, res) => {
             return;
         }
 
-        if(user.password !== password) {
+        const auth = await bcrypt.compare(password, user.password);
+
+        if(!auth) {
             res.status(401).json({ error: "Invalid password"});
             return;
         }
@@ -28,9 +31,13 @@ const signUp = async (req, res) => {
     const { username, password } = req.body;
 
     try {
+        const salt = await bcrypt.genSalt();
+
+        const hashedPassword = await bcrypt.hash(password, salt);
+
         const user = await User.create({
             username: username,
-            password: password
+            password: hashedPassword
         });
 
         delete user._doc.password;
