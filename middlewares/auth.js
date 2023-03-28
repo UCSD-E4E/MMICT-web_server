@@ -1,34 +1,42 @@
-// import jwt from 'jsonwebtoken';
-// import { DatabaseUser } from '../models/user';
-// require('dotenv').config();
+const { verify } = require('../util/jwt');
+const { Unauthorized } = require('../error/index');
 
-// /**
-//  * Generate a jwt for a user
-//  * @param user
-//  */
-// export function generateToken(user: DatabaseUser) {
-//   let u = {
-//    username: user.username,
-//    creationDate: user.creationDate,
-//    email: user.email,
-//   };
+const requireAuth = (
+  req,
+  res,
+  next
+) => {
+  const authHeader = req.get('Authorization');
 
-//   // Return the JWT Token
-//   return jwt.sign(u, process.env.JWT_SECRET, {
-//      expiresIn: 7 * 60 * 60 * 24 // expires in 1 week
-//   });
-// }
+  if (!authHeader) {
+    return next(new Unauthorized('Missing auth token'));
+  }
 
-// /**
-//  * Verify a jwt
-//  * @param token - the jwt to verify 
-//  */
-// export async function verify(token: string) : Promise<any> {
-//   return new Promise( (resolve, reject) => {
-//     jwt.verify(token, process.env.JWT_SECRET, (err: Error, user: DatabaseUser) => {
-//       if (err) reject(err);
-//       resolve(user);
-//     });
+  const authHead = authHeader.split(' ');
 
-//   })
-// }
+  const invalidAuthFormat =
+    authHead.length !== 2 ||
+    authHead[0] !== 'Bearer' ||
+    authHead[1].length === 0;
+
+  if (invalidAuthFormat) {
+    return next(new Unauthorized('Invalid auth token format'));
+  }
+
+  verify(authHead[1])
+    .then((data) => {
+      req.user = data;
+      next();
+    })
+    .catch((err) => {
+      //checks if jwt is malformed
+      if (err.message.includes('invalid signature')) {
+        err = new Unauthorized('Malformed JWT');
+      }
+      next(err);
+    });
+};
+
+module.exports = {
+  requireAuth
+};

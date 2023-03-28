@@ -1,34 +1,42 @@
 const User = require('../models/User');
+const { generateToken } = require('../util/jwt');
 const bcrypt = require('bcrypt');
+const { BadRequest, NotFound, Unauthorized, Conflict } = require('../error/index');
 
-const login = async (req, res) => {
+const login = async (req, res, next) => {
     const { username, password } = req.body;
+
+    if (!username) return next(new BadRequest('Missing username'));
+    if (!password) return next(new BadRequest('Missing password'));
 
     try {
         const user = await User.findOne({ 'username' : username });
 
         if(user == null) {
-            res.status(401).json({ error: "User with that username does not exist"});
-            return;
+            return next(new NotFound('User with that username does not exist'));
         }
 
         const auth = await bcrypt.compare(password, user.password);
 
         if(!auth) {
-            res.status(401).json({ error: "Invalid password"});
-            return;
+            return next(new Unauthorized('Invalid password'));
         }
+
+        const token = generateToken(user);
 
         delete user._doc.password;
     
-        res.status(201).json(user);
+        res.status(201).json({user, token});
     } catch (err) {
-        res.status(500).json(err);
+        next(err);
     }
 }
 
-const signUp = async (req, res) => {
+const signUp = async (req, res, next) => {
     const { username, password } = req.body;
+
+    if (!username) return next(new BadRequest('Missing username'));
+    if (!password) return next(new BadRequest('Missing password'));
 
     try {
         const salt = await bcrypt.genSalt();
@@ -37,19 +45,21 @@ const signUp = async (req, res) => {
 
         const user = await User.create({
             username: username,
-            password: hashedPassword
+            password: hashedPassword,
+            images: []
         });
+
+        const token = generateToken(user);
 
         delete user._doc.password;
     
-        res.status(201).json(user);
+        res.status(201).json({user, token});
     } catch (err) {
         if(err.message.includes("duplicate key error collection")) {
-            res.status(500).json({error: "Username already taken"});
-            return;
+            err = new Conflict("User with that username already exists");
         }
 
-        res.status(500).json(err);
+        next(err);
     }
 }
 

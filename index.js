@@ -3,6 +3,7 @@ const cors = require('cors');
 const helmet = require("helmet");
 const routes = require('./routes');
 const mongoose = require('mongoose');
+const { errorHandler } = require('./error');
 
 require('dotenv').config();
 
@@ -37,6 +38,8 @@ db.on('error', err => {
 app.get('/', (req, res) => {
     res.status(200).send('<h1>It Works!</h1>');
 })
+
+app.use(errorHandler)
 
 app.listen(process.env.PORT, () => {
     console.log(`listening on port ${process.env.PORT}`);
