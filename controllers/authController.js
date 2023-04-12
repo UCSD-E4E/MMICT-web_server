@@ -7,20 +7,20 @@ const login = async (req, res, next) => {
     const { username, password } = req.body;
 
     if (!username) return next(new BadRequest('Missing username'));
-    if (!password) return next(new BadRequest('Missing password'));
+    // if (!password) return next(new BadRequest('Missing password'));
 
     try {
-        const user = await User.findOne({ 'username' : username });
+        // const user = await User.findOne({ 'username' : username });
 
-        if(user == null) {
-            return next(new NotFound('User with that username does not exist'));
-        }
+        // if(user == null) {
+        //     return next(new NotFound('User with that username does not exist'));
+        // }
 
-        const auth = await bcrypt.compare(password, user.password);
+        // const auth = await bcrypt.compare(password, user.password);
 
-        if(!auth) {
-            return next(new Unauthorized('Invalid password'));
-        }
+        // if(!auth) {
+        //     return next(new Unauthorized('Invalid password'));
+        // }
 
         const token = generateToken(user);
 
