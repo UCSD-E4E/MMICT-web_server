@@ -1,6 +1,8 @@
 require('dotenv/config')
 const AWS = require('aws-sdk')
 const uuid = require('uuid').v4;
+const User = require('../models/User');
+const Image = require('../models/Image');
 
 AWS.config.update({
   accessKeyId: process.env.AWS_ACCESS_KEY,
@@ -13,17 +15,18 @@ const s3 = new AWS.S3({
 
 const uploadToS3 = async (req, res) => {
     try {
-
         console.log("upload");
+
+        const { username } = req.body;
+
+        const imageArray = [];
 
         const files = req.files;
 
-        files.forEach(file => {
+        files.forEach(async file => {
             const fileKey = uuid();
             let fileName = file.originalname.split(".");
             const fileType = fileName[fileName.length - 1];
-
-            // todo: check accepted file types
 
             const params = {
                 Bucket: process.env.AWS_BUCKET_NAME,
@@ -35,13 +38,21 @@ const uploadToS3 = async (req, res) => {
                 throw error;
             }});
 
-            // todo: add image ref (key) to mongoDB
+            const image = await Image.create({
+                name: fileName,
+                reference: fileKey,
+                labels: null
+            });
 
+            imageArray.push(image);
         });
+
+        const user = await User.findOneAndUpdate({ 'username' : username }, { $push: { images: { $each: imageArray } } }, { new: true });
+    
+        res.status(200).json(user);
     } catch (err) {
-        res.status(500).json(err).send();
+        next(err);
     }
-    res.status(200).send();
 }
 
 module.exports = {
