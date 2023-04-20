@@ -23,8 +23,6 @@ const uploadToS3 = async (req, res) => {
             let fileName = file.originalname.split(".");
             const fileType = fileName[fileName.length - 1];
 
-            // todo: check accepted file types
-
             const params = {
                 Bucket: process.env.AWS_BUCKET_NAME,
                 Key: `${fileKey}.${fileType}`,
@@ -41,6 +39,7 @@ const uploadToS3 = async (req, res) => {
     } catch (err) {
         res.status(500).json(err).send();
     }
+    console.log("upload successful!");
     res.status(200).send();
 }
 
