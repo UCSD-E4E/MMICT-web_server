@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const UserSchema = new mongoose.Schema({
   username: { type: String, index: true, required: true, unique: true },
@@ -6,5 +6,5 @@ const UserSchema = new mongoose.Schema({
   images: [{ type : mongoose.Schema.Types.ObjectId, ref: 'Image' }]
 }, { minimize: false });
 
-module.exports = mongoose.model('User', UserSchema);
+export const User = mongoose.model('User', UserSchema);
 

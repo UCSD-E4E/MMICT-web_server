@@ -1,19 +1,23 @@
-version: "3"
+version: "3.4"
+
 services:
   server:
     container_name: mangrove-server
-    build: .
+    build: 
+      context: .
+      target: development
+    volumes:
+      - ./:/usr/src/app
+      - /usr/src/app/node_modules
     ports:
       - '8000:8000'
+    command: npm run dev
     depends_on:
       - mongo
   mongo:
     image: mongo
     ports:
       - '27017:27017'
-    # environment:
-    #   - MONGO_INITDB_ROOT_USERNAME=edward
-    #   - MONGO_INITDB_ROOT_PASSWORD=password
     volumes:
       - mongo-db:/data/db # named volume - name:path
 

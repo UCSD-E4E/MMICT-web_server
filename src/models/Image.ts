@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from "mongoose";
 
 const PolygonSchema = new mongoose.Schema({
     type: {
@@ -18,5 +18,5 @@ const ImageSchema = new mongoose.Schema({
   labels: PolygonSchema,
 }, { minimize: false });
 
-module.exports = mongoose.model('Image', ImageSchema);
+export const Image = mongoose.model('Image', ImageSchema);
 
