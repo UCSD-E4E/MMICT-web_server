@@ -31,6 +31,7 @@
     "@types/helmet": "^4.0.0",
     "@types/mongoose": "^5.11.97",
     "@types/node": "^18.15.11",
+    "@types/socket.io-client": "^3.0.0",
     "nodemon": "^2.0.20",
     "rimraf": "^5.0.0",
     "ts-node-dev": "^1.1.8",
