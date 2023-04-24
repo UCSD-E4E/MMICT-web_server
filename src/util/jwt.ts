@@ -5,7 +5,7 @@ require('dotenv').config();
  * Generate a jwt for a user
  * @param user
  */
-function generateToken(user) {
+export function generateToken(user: any) {
     let u = {
         username: user.username,
         images: user.images,
@@ -21,16 +21,11 @@ function generateToken(user) {
  * Verify a jwt
  * @param token - the jwt to verify 
  */
-async function verify(token) {
+export async function verify(token: any) : Promise<any> {
     return new Promise( (resolve, reject) => {
-        jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+        jwt.verify(token, process.env.JWT_SECRET, (err: any, user: any) => {
             if (err) reject(err);
             resolve(user);
         });
     })
-}
-
-module.exports = {
-    generateToken,
-    verify
 }

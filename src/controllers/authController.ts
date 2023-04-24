@@ -1,16 +1,17 @@
-const User = require('../models/User');
-const { generateToken } = require('../util/jwt');
-const bcrypt = require('bcrypt');
-const { BadRequest, NotFound, Unauthorized, Conflict } = require('../error/index');
+import { Request, Response, NextFunction } from 'express';
+import { BadRequest, NotFound, Unauthorized, Conflict } from '../error/index';
+import { generateToken } from '../util/jwt';
+import { User } from '../models/User';
+import bcrypt from 'bcrypt';
 
-const login = async (req, res, next) => {
+export const login = async (req: Request, res: Response, next: NextFunction) => {
     const { username, password } = req.body;
 
     if (!username) return next(new BadRequest('Missing username'));
     if (!password) return next(new BadRequest('Missing password'));
 
     try {
-        const user = await User.findOne({ 'username' : username });
+        const user: any = await User.findOne({ 'username' : username });
 
         if(user == null) {
             return next(new NotFound('User with that username does not exist'));
@@ -32,7 +33,7 @@ const login = async (req, res, next) => {
     }
 }
 
-const signUp = async (req, res, next) => {
+export const signUp = async (req: Request, res: Response, next: NextFunction) => {
     const { username, password } = req.body;
 
     if (!username) return next(new BadRequest('Missing username'));
@@ -43,7 +44,7 @@ const signUp = async (req, res, next) => {
 
         const hashedPassword = await bcrypt.hash(password, salt);
 
-        const user = await User.create({
+        const user: any = await User.create({
             username: username,
             password: hashedPassword,
             images: []
@@ -54,16 +55,11 @@ const signUp = async (req, res, next) => {
         delete user._doc.password;
     
         res.status(201).json({user, token});
-    } catch (err) {
+    } catch (err: any) {
         if(err.message.includes("duplicate key error collection")) {
             err = new Conflict("User with that username already exists");
         }
 
         next(err);
     }
-}
-
-module.exports = {
-    login,
-    signUp
 }

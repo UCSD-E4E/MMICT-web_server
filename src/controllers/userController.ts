@@ -1,6 +1,7 @@
-const User = require('../models/User');
+import { Request, Response } from 'express';
+import { User } from '../models/User';
 
-const getUsers = async (req, res) => {
+export const getUsers = async (req: Request, res: Response) => {
     try {
         const users = await User.find({}).select("-password");
     
@@ -8,8 +9,4 @@ const getUsers = async (req, res) => {
     } catch (err) {
         res.status(500).json(err);
     }
-}
-
-module.exports = {
-    getUsers
 }

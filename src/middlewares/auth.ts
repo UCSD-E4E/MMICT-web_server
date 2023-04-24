@@ -1,10 +1,11 @@
-const { verify } = require('../util/jwt');
-const { Unauthorized } = require('../error/index');
+import { Request, Response, NextFunction } from 'express';
+import { Unauthorized } from '../error/index';
+import { verify } from '../util/jwt';
 
-const requireAuth = (
-  req,
-  res,
-  next
+export const requireAuth = (
+  req: Request,
+  res: Response,
+  next: NextFunction
 ) => {
   const authHeader = req.get('Authorization');
 
@@ -35,8 +36,4 @@ const requireAuth = (
       }
       next(err);
     });
-};
-
-module.exports = {
-  requireAuth
 };
