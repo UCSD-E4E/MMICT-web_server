@@ -1,9 +1,9 @@
-const express = require('express');
+import express from "express";
 const router = express.Router();
-const uploadController = require('../controllers/uploadController');
+import { classify } from '../controllers/classifyController';
 
 router
   .route('/classify')
-  .post(uploadController.classify);
+  .post(classify);
 
-module.exports = router;
+export const classifyRouter = router;
