@@ -1,37 +1,40 @@
 import { Request, Response } from 'express';
 import { Image } from '../models/Image';
 import { io } from "socket.io-client";
+import { WebSocket } from 'ws'
 
 export const classify = async (req: Request, res: Response) => {
     try {
 
-        const socket = io('ws://127.0.0.1:5001/ws-process');
+      const PROCESSING_SERVICE_IP:string = 'ws://127.0.0.1:5000/ws-classify';
+      // const ECHO:string = 'ws://100.64.110.125:5001/echo'
 
-        const dataType = req.body.dataType
-        const modelType = req.body.modelType
+      const ws:WebSocket = new WebSocket(PROCESSING_SERVICE_IP)
 
-        const requestJson = {
-            classifier_id: 0,
-            processor_id: 0,
-            image_ref: 'dummy-img-ref',
-        };
+      const requestJson = {
+        classifier_id: 0,
+        processor_id: 0,
+        image_ref: 'dummy-img-ref',
+    };
 
-        console.log("classify");
-        socket.emit('classify-parameters', JSON.stringify(requestJson));
 
-        socket.on('message', (data: string) => {
-          const result = JSON.parse(data);
-          console.log(`Received message: ${result}`);
-        });
+      ws.on('error', (e:any) => console.log(e));
 
-        socket.on('error', (data: string) => {
-          const result = JSON.parse(data);
-          console.log(`Received error: ${result}`);
-        });
+      ws.on('open', function open() {
+        console.log("HUH")
+        ws.send(JSON.stringify(requestJson));
+        console.log("sent %s", JSON.stringify(requestJson))
+      });
+      
+      ws.on('message', function message(data:any) {
+        console.log('received: %s', data);
+        res.status(269).send("kewl\n")
+      });
 
-        // res.status(200).send("classify completed!");
+
 
     } catch (err) {
-        res.status(500).json(err);
+        res.status(200).send(err);
+        console.log(err)
     }
 }
