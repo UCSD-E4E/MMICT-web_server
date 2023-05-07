@@ -13,13 +13,11 @@ const s3 = new AWS.S3({
     region: process.env.AWS_REGION
 });
 
-const uploadToS3 = async (req, res) => {
+const uploadToS3 = async (req, res, next) => {
     try {
         console.log("upload");
 
         const { username } = req.body;
-
-        const imageArray = [];
 
         const files = req.files;
 
@@ -33,23 +31,25 @@ const uploadToS3 = async (req, res) => {
                 Key: `${fileKey}.${fileType}`,
                 Body: file.buffer
             };
+
             s3.upload(params, (error, data) => {
-            if(error) {
-                throw error;
-            }});
+                if(error) {
+                    throw error;
+                }
+            });
 
             const image = await Image.create({
-                name: fileName,
+                name: fileName[0],
                 reference: fileKey,
                 labels: null
             });
 
-            imageArray.push(image);
-        });
+            console.log(image);
 
-        const user = await User.findOneAndUpdate({ 'username' : username }, { $push: { images: { $each: imageArray } } }, { new: true });
+            await User.findOneAndUpdate({ 'username' : username }, { $push: { images: image } }, { new: true });
+        });
     
-        res.status(200).json(user);
+        res.status(200).json();
     } catch (err) {
         next(err);
     }
