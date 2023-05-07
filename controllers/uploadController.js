@@ -15,8 +15,6 @@ const s3 = new AWS.S3({
 
 const uploadToS3 = async (req, res, next) => {
     try {
-        console.log("upload");
-
         const { username } = req.body;
 
         const files = req.files;
@@ -44,12 +42,10 @@ const uploadToS3 = async (req, res, next) => {
                 labels: null
             });
 
-            console.log(image);
-
             await User.findOneAndUpdate({ 'username' : username }, { $push: { images: image } }, { new: true });
         });
     
-        res.status(200).json();
+        res.status(200).json(await User.findOne({'username' : username}));
     } catch (err) {
         next(err);
     }
