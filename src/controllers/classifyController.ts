@@ -13,6 +13,13 @@ export const classify = async (req: Request, res: Response) => {
       const ws:WebSocket = new WebSocket(PROCESSING_SERVICE_IP)
 
       console.log(req.body)
+
+      // todo: check with frontend on the parameters being passed in
+      const data_type = req.body['dataType']
+      const model_type = req.body['modelType']
+      // todo: retrieve image reference from user db
+      // const img_ref =
+
       // Return a 400 error if anything is missing from the request body
       if (!("classifier_id" in req.body && "processor_id" in req.body && "image_ref" in req.body)){
         res.status(400)
@@ -22,6 +29,7 @@ export const classify = async (req: Request, res: Response) => {
       }
 
       // fill in the request
+      // todo: update the parameters to ip-service
       let requestJson = {
         classifier_id: req.body['classifier_id'],
         processor_id: req.body['processor_id'],
