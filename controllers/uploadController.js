@@ -38,7 +38,7 @@ const uploadToS3 = async (req, res, next) => {
 
             const image = await Image.create({
                 name: fileName[0],
-                reference: fileKey,
+                reference: params.Key,
                 labels: null
             });
 
