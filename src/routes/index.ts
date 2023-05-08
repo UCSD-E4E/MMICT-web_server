@@ -1,6 +1,7 @@
 import express from "express";
 import { authRouter } from './auth';
 import { userRouter } from './users';
+import { uploadRoute } from './upload';
 
 const router = express.Router();
 
@@ -12,6 +13,10 @@ const defaultRoutes = [
     {
         path: '/users',
         route: userRouter,
+    },
+    {
+        path: '/',
+        route: uploadRoute,
     },
 ];
 

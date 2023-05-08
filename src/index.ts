@@ -13,6 +13,7 @@ declare global {
     namespace Express {
         interface Request {
             user?: $TSFixMe
+            files?: $TSFixMe
         }
     }
 }
