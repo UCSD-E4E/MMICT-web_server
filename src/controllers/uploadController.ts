@@ -1,8 +1,10 @@
-require('dotenv/config')
-const AWS = require('aws-sdk')
+const AWS = require('aws-sdk');
+import { Request, Response, NextFunction } from 'express';
 const uuid = require('uuid').v4;
-const User = require('../models/User');
-const Image = require('../models/Image');
+import { User } from '../models/User';
+import { Image } from '../models/Image';
+
+require('dotenv').config();
 
 AWS.config.update({
   accessKeyId: process.env.AWS_ACCESS_KEY,
@@ -13,24 +15,24 @@ const s3 = new AWS.S3({
     region: process.env.AWS_REGION
 });
 
-const uploadToS3 = async (req, res, next) => {
+export const uploadToS3 = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { username } = req.body;
 
         const files = req.files;
 
-        files.forEach(async file => {
+        files.forEach(async (file: any) => {
             const fileKey = uuid();
             let fileName = file.originalname.split(".");
             const fileType = fileName[fileName.length - 1];
 
-            const params = {
+            const params: any = {
                 Bucket: process.env.AWS_BUCKET_NAME,
                 Key: `${fileKey}.${fileType}`,
                 Body: file.buffer
             };
 
-            s3.upload(params, (error, data) => {
+            s3.upload(params, (error: Error, data: any) => {
                 if(error) {
                     throw error;
                 }
@@ -49,8 +51,4 @@ const uploadToS3 = async (req, res, next) => {
     } catch (err) {
         next(err);
     }
-}
-
-module.exports = {
-    uploadToS3
 }
