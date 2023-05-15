@@ -2,10 +2,15 @@ import express from "express";
 import { authRouter } from './auth';
 import { userRouter } from './users';
 import { uploadRoute } from './upload';
+import { imageRouter } from './image';
 
 const router = express.Router();
 
 const defaultRoutes = [
+    {
+        path: '/images',
+        route: imageRouter
+    },
     {
         path: '/auth',
         route: authRouter,
@@ -17,7 +22,7 @@ const defaultRoutes = [
     {
         path: '/',
         route: uploadRoute,
-    },
+    }
 ];
 
 // const devRoutes = [
