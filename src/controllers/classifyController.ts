@@ -9,7 +9,8 @@ export const classify = async (req: Request, res: Response) => {
       // curl -X POST -H "Content-Type: application/json" -d '{"classifier_id": 0, "processor_id": 0, "image_ref":"test_ref"}' 127.0.0.1:8000/classify
 
       // CHANGE IP TO THIS MACHINE'S IP !!
-      const PROCESSING_SERVICE_IP:string = 'ws://100.64.220.102:5000/ws-process';
+      const IP = '100.64.112.224'
+      const PROCESSING_SERVICE_IP:string = 'ws://' + IP + ':5000/ws-process';
       const ws:WebSocket = new WebSocket(PROCESSING_SERVICE_IP)
 
       console.log(req.body)
@@ -21,13 +22,14 @@ export const classify = async (req: Request, res: Response) => {
         return
       }
 
-      // fill in the request
+      // fill in the request with data from POST body
       let requestJson = {
         classifier_id: req.body['classifier_id'],
         processor_id: req.body['processor_id'],
         image_ref: req.body['image_ref']
       };
-
+      
+      // console.log any error and use the ws_callback for any message
       ws.on('error', (e:any) => console.log(e));
       ws.on('message', (data:any) => ws_callback(data));
 
@@ -52,9 +54,10 @@ export const classify = async (req: Request, res: Response) => {
             res.statusMessage = "Geojson Not Returned"
             res.send()
           }
+          let geojson = data["geojson"]
           res.status(269)
           res.statusMessage = "Groovy"
-          res.send(data)
+          res.send(geojson)
         }
       }
       

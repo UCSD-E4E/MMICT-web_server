@@ -5,6 +5,9 @@ import mongoose from 'mongoose';
 import { errorHandler } from './error';
 import helmet from 'helmet';
 
+import { Server, WebSocket } from 'ws';
+import { handle_classify } from './middlewares/ws_classify'
+
 require('dotenv').config();
 
 declare global {
@@ -30,6 +33,7 @@ app.use(express.json());
 
 app.use(routes);
 
+
 mongoose.connect(process.env.MONGO_CONNECTION_STRING as string, {
     serverSelectionTimeoutMS: 5000
   }).catch((err: any) => console.log(err.reason));
@@ -49,6 +53,23 @@ app.get('/', (req: Request, res: Response) => {
 
 app.use(errorHandler)
 
-app.listen(process.env.PORT, () => {
+const server = app.listen(process.env.PORT, () => {
     console.log(`listening on port ${process.env.PORT}`);
+});
+
+
+// create a websocket server
+const ws_server:Server = new Server({ noServer: true });
+ws_server.on('connection', socket => {
+    handle_classify(socket)
+    console.log("handling new ws connection")
+
+});
+
+
+// handle incoming websocket connections
+server.on('upgrade', (request, socket, head) => {
+ws_server.handleUpgrade(request, socket, head, socket => {
+    ws_server.emit('connection', socket, request);
+  });
 });
