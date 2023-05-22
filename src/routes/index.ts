@@ -3,6 +3,7 @@ import { authRouter } from './auth';
 import { userRouter } from './users';
 import { uploadRoute } from './upload';
 import { deleteRoute } from './delete';
+import { downloadRoute } from './download';
 
 const router = express.Router();
 
@@ -22,6 +23,10 @@ const defaultRoutes = [
     {
         path: '/classify',
         route: deleteRoute,
+    },
+    {
+        path: '/classify',
+        route: downloadRoute,
     },
 ];
 
