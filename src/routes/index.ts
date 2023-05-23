@@ -17,11 +17,11 @@ const defaultRoutes = [
         route: userRouter,
     },
     {
-        path: '/',
+        path: '/upload',
         route: uploadRoute,
     },
     {
-        path: '/classify',
+        path: '/delete',
         route: deleteRoute,
     },
     {
