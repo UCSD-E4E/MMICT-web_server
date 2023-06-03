@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Classification Example</title>
+</head>
+<body>
+  <h1>Classification (websockets)</h1>
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: Arial, sans-serif;
+    }
+
+    form {
+        display: flex;
+        align-items: center;
+        /* gap: 10px; */
+        /* margin-bottom: 10px; */
+        align-content: center;
+        flex-direction: column;
+    }
+    /* #connect-form {
+        border: 1px dotted red
+    } */
+    #progressBarLabel {
+      margin-top: 20px;
+    }
+  </style>
+  <form id="connect-form">
+    <input type="text" id="ip-input" placeholder="IP:PORT" />
+    <button type="submit">Connect</button>
+  </form>
+
+  <form id="message-form">
+    <label for="class-input">Classifier Id</label>
+    <input type="text" id="class-input" placeholder="0" />
+    <label for="process-input">Processor Id</label>
+    <input type="text" id="process-input" placeholder="0" />
+    <label for="img-input">Image Ref</label>
+    <input type="text" id="img-input" placeholder="example.tif" value="975707f7-c890-4b8a-ace5-72f5b7620b55.tif" required/>
+    <button type="submit">Send</button>
+  </form>
+
+  <label id="progressBarLabel" for="progressBar"></label>
+  <progress id="progressBar" max="100" value="0"> 70% </progress>
+
+
+
+  <output id="addrConn"></output>
+  <output id="output"></output>
+
+  <script>
+    // WebSocket connection global
+    let socket;
+
+    // Connect form submission
+    document.getElementById('connect-form').addEventListener('submit', (event) => {
+      event.preventDefault();
+      const ipInput = document.getElementById('ip-input');
+      const ip = ipInput.value;
+    //   ipInput.value = '';
+      connectWebSocket(ip);
+      document.getElementById('addrConn').innerHTML = "connected to: " + ipInput.value
+    });
+
+    // Send message form submission
+    document.getElementById('message-form').addEventListener('submit', (event) => {
+      event.preventDefault();
+      const classInput = document.getElementById('class-input');
+      const processInput = document.getElementById('process-input');
+      const imgInput = document.getElementById('img-input');
+    //   {"classifier_id": 0, "processor_id": 0, "image_ref":"975707f7-c890-4b8a-ace5-72f5b7620b55.tif"}
+      const message = `{"classifier_id": ${classInput.value}, "processor_id": ${processInput.value}, "image_ref":"${imgInput.value}"}`
+      if(!socket){
+        document.getElementById('output').innerText = "failed (socket not connected)"
+      }
+      socket.send(message);
+      console.log('Sent message:', message);
+    });
+
+    // Callback for status updates
+    function wsStatusUpdate(status){
+        document.getElementById('progressBarLabel').innerText = status
+        document.getElementById('progressBar').value += 10
+        setTimeout(3000,document.getElementById('progressBar').value += 10)
+        console.log("status is now:" + status)
+    }
+    // Callback for geojson
+    function receiveGeoJson(geojson){
+        console.log("recieved geojson")
+        document.getElementById('progressBar').value = 100
+    }
+
+
+    function connectWebSocket(addr) {
+      // Close the existing WebSocket connection, if any
+      if (socket) {
+        socket.close();
+      }
+      // WebSocket connection
+      socket = new WebSocket(`ws://${addr}`);
+
+      // Connection opened
+      socket.addEventListener('open', () => {
+        // this is where you can allow things to be sent on the websocket
+        console.log('WebSocket connection established.');
+      });
+
+      // Listen for messages
+      socket.addEventListener('message', (event) => {
+        console.log(event.data)
+        msg = JSON.parse(event.data)
+        // call callbacks
+        wsStatusUpdate(msg.status)
+        if(msg.geojson){
+            receiveGeoJson(msg.geojson)
+        }
+        console.log('Received message:', receivedMessage);
+      });
+      // Connection closed
+      socket.addEventListener('close', () => {
+        console.log('WebSocket connection closed.');
+      });
+    }
+  </script>
+</body>
+</html>

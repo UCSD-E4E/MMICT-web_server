@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { Image } from '../models/Image';
-import { io } from "socket.io-client";
 import { WebSocket } from 'ws'
+
 
 /**
  * Handle websocket version with status updates of the classification service
@@ -26,7 +26,7 @@ export const classify = async (requst: any, client_socket: WebSocket) => {
     client_socket.on('message', message => {client_socket.send("request already made, please do not make duplicate requests")});
 
       // CHANGE IP TO ip_service IP !!
-      const IP = '100.64.85.193'
+      const IP = '192.168.1.195'
       const PROCESSING_SERVICE_IP:string = 'ws://' + IP + ':5000/ws-process';
       const ws:WebSocket = new WebSocket(PROCESSING_SERVICE_IP)
 
@@ -56,17 +56,15 @@ export const classify = async (requst: any, client_socket: WebSocket) => {
         // read incoming communication as a JSON object
         data = JSON.parse(String(data))
         let data_status = data["status"]
-        
-        // update the client
-        client_socket.send(data)
-
         console.log('status: %s', data_status)
-      }
-      
 
-
-    // } catch (err) {
-    //     // socket.close()
-    //     console.log("failed to ws_classify")
-    // }
+        // forward to the client
+        client_socket.send(JSON.stringify(data))
+      }   
 }
+
+
+/**
+ * socket.send('{"classifier_id": 0, "processor_id": 0, "image_ref":"975707f7-c890-4b8a-ace5-72f5b7620b55.tif"}')
+
+ */

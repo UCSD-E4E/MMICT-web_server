@@ -58,8 +58,9 @@ const server = app.listen(process.env.PORT, () => {
 });
 
 
-// create a websocket server
+// create a websocket server to handle incoming websocket connections
 const ws_server:Server = new Server({ noServer: true });
+// recieve new connections form the webserver
 ws_server.on('connection', socket => {
     handle_classify(socket)
     console.log("handling new ws connection")
@@ -67,7 +68,7 @@ ws_server.on('connection', socket => {
 });
 
 
-// handle incoming websocket connections
+// set handler for incoming websocket connections
 server.on('upgrade', (request, socket, head) => {
 ws_server.handleUpgrade(request, socket, head, socket => {
     ws_server.emit('connection', socket, request);

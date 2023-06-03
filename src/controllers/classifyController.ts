@@ -6,10 +6,10 @@ import { WebSocket } from 'ws'
 export const classify = async (req: Request, res: Response) => {
     try {
       // command to run on commandline \/ \/ \/ 
-      // curl -X POST -H "Content-Type: application/json" -d '{"classifier_id": 0, "processor_id": 0, "image_ref":"test_ref"}' 127.0.0.1:8000/classify
+      // curl -X POST -H "Content-Type: application/json" -d '{"classifier_id": 0, "processor_id": 0, "image_ref":"975707f7-c890-4b8a-ace5-72f5b7620b55.tif"}' 127.0.0.1:8000/classify
 
       // CHANGE IP TO THIS MACHINE'S IP !!
-      const IP = '100.64.112.224'
+      const IP = '192.168.1.195'
       const PROCESSING_SERVICE_IP:string = 'ws://' + IP + ':5000/ws-process';
       const ws:WebSocket = new WebSocket(PROCESSING_SERVICE_IP)
 
