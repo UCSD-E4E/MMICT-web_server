@@ -10,7 +10,7 @@ const PolygonSchema = new mongoose.Schema({
         type: [[[Number]]], // Array of arrays of arrays of numbers
         required: true
     }
-});
+}, {_id: false}); // Disable generating "_id" field for subdocument;
 
 const ImageSchema = new mongoose.Schema({
   name: { type: String, index: true, required: true },

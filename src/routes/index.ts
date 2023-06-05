@@ -2,8 +2,7 @@ import express from "express";
 import { authRouter } from './auth';
 import { userRouter } from './users';
 import { uploadRoute } from './upload';
-import { deleteRoute } from './delete';
-import { downloadRoute } from './download';
+import { classificationsRoute } from './classifications';
 
 const router = express.Router();
 
@@ -21,12 +20,8 @@ const defaultRoutes = [
         route: uploadRoute,
     },
     {
-        path: '/delete',
-        route: deleteRoute,
-    },
-    {
-        path: '/classify',
-        route: downloadRoute,
+        path: '/classifications',
+        route: classificationsRoute,
     },
 ];
 
