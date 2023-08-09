@@ -6,7 +6,7 @@
  * These classes descend from the base Error class, so they also automatically capture
  * stack traces--useful for debugging.
  */
-import { Request, Response, NextFunction } from 'express';
+import { type Request, type Response, type NextFunction } from "express";
 
 /**
  * Base error class.
@@ -33,55 +33,55 @@ export class HttpError extends Error {
 
 export class UserError extends HttpError {
   constructor(message: string | Error) {
-    super(200, message || 'User Error');
+    super(200, message || "User Error");
   }
 }
 
 export class BadRequest extends HttpError {
   constructor(message: string | Error) {
-    super(400, message || 'Bad Request');
+    super(400, message || "Bad Request");
   }
 }
 
 export class Unauthorized extends HttpError {
   constructor(message: string | Error) {
-    super(401, message || 'Unauthorized');
+    super(401, message || "Unauthorized");
   }
 }
 
 export class Forbidden extends HttpError {
   constructor(message: string | Error) {
-    super(403, message || 'Permission denied');
+    super(403, message || "Permission denied");
   }
 }
 
 export class NotFound extends HttpError {
   constructor(message: string | Error) {
-    super(404, message || 'Resource not found');
+    super(404, message || "Resource not found");
   }
 }
 
 export class Conflict extends HttpError {
   constructor(message: string | Error) {
-    super(409, message || 'Conflict');
+    super(409, message || "Conflict");
   }
 }
 
 export class Unprocessable extends HttpError {
   constructor(message: string | Error) {
-    super(422, message || 'Unprocessable request');
+    super(422, message || "Unprocessable request");
   }
 }
 
 export class InternalServerError extends HttpError {
   constructor(message: string | Error) {
-    super(500, message || 'Internal server error');
+    super(500, message || "Internal server error");
   }
 }
 
 export class NotImplemented extends HttpError {
   constructor(message: string | Error) {
-    super(501, message || 'Not Implemented');
+    super(501, message || "Not Implemented");
   }
 }
 
@@ -93,11 +93,11 @@ export const errorHandler = (
   err: HttpError,
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   if (!err)
     err = new InternalServerError(
-      'An unknown error occurred in the errorHandler'
+      "An unknown error occurred in the errorHandler",
     );
   if (!err.status) err = new InternalServerError(err.message);
   if (err.status >= 500) {
