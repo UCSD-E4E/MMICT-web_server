@@ -7,6 +7,8 @@ import helmet from 'helmet';
 
 require('dotenv').config();
 
+console.log(process.env.NODE_ENV)
+
 declare global {
     type $TSFixMe = any
 
