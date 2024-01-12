@@ -12,17 +12,19 @@ services:
       - /usr/src/app
       - /usr/src/app/node_modules
     ports:
-      - '8000:8000'
+      - 8000:8000
     # command: npm run dev
     depends_on:
       - mongo
     environment:
       PORT: ${PORT}
+      MONGO_CONNECTION_STRING: mongodb://mongo:27017/mmict-test
   mongo:
     image: mongo
     ports:
       - '27017:27017'
     volumes:
+      #this allows data to persist between new containers
       - mongo-db:/data/db # named volume - name:path
 
 networks:

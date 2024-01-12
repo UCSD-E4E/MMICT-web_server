@@ -14,6 +14,13 @@ require('dotenv').config();
 const app = express();
 let ews = expressWs(app)
 
+// enable only certain origins
+app.use(cors({
+    //origin: 'http://localhost:8080' // frontend server
+    // allow all origins
+    origin: '*'
+}));
+
 app.use(function (req, res, next) {
   res.setHeader(
     'Content-Security-Policy',
@@ -61,9 +68,6 @@ declare global {
     }
 }
 
-// enable cors
-app.use(cors());
-
 // use helmet for more security
 app.use(helmet());
 
@@ -73,11 +77,6 @@ app.use(helmet.contentSecurityPolicy({
         "connect-src": ["'self'", "ws://172.18.0.2:5000"]
     }
 }));
-
-// parse json request body
-app.use(express.json());
-
-app.use(routes);
 
 mongoose.connect(process.env.MONGO_CONNECTION_STRING as string, {
     serverSelectionTimeoutMS: 5000
@@ -92,10 +91,14 @@ db.on('error', (err: any) => {
     console.error('connection error:', err)
 })
 
+// parse json request body
+app.use(express.json());
+
+//express routing
+app.use(routes);
 app.get('/', (req: Request, res: Response) => {
     res.status(200).send('<h1>It Works!</h1>');
 })
-
 app.use(errorHandler)
 
 app.listen(process.env.PORT, () => {

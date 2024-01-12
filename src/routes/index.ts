@@ -20,6 +20,12 @@ const defaultRoutes = [
     },
 ];
 
+defaultRoutes.forEach((route) => {
+    router.use(route.path, route.route);
+});
+
+export default router;
+
 // const devRoutes = [
 //     // routes available only in development mode
 //     {
@@ -27,9 +33,3 @@ const defaultRoutes = [
 //         route: docsRoute,
 //     },
 // ];
-
-defaultRoutes.forEach((route) => {
-    router.use(route.path, route.route);
-});
-
-export default router;
