@@ -1,16 +1,14 @@
 import { Request, Response } from 'express';
 import { User } from '../models/User';
 
-export const checkUser = async (req: Request, res: Response) => {
+// get a user's information from the mongoDB database
+export const getUser = async (req: Request, res: Response) => {
     try {
-        const user = await User.findOne({ userId: req.params.userId });
-        if (user) {
-          res.json({ exists: true });
-        } else {
-          res.json({ exists: false });
-        }
-    } catch (error) {
-    res.status(500).send(error);
+        const user = await User.findOne({userId : req.params.userId});
+    
+        res.status(200).json(user);
+    } catch (err) {
+        res.status(500).json(err);
     }
 }
 
@@ -24,17 +22,6 @@ export const getUsers = async (req: Request, res: Response) => {
     }
 }
 
-// get a user's information from the mongoDB database
-export const getUser = async (req: Request, res: Response) => {
-    try {
-        const user = await User.findOne({userId : req.params.userId});
-    
-        res.status(200).json(user);
-    } catch (err) {
-        res.status(500).json(err);
-    }
-}
-
 // upload a user's information to the mongoDB database
 export const uploadUser = async (req: Request, res: Response) => {
     try {
@@ -42,5 +29,18 @@ export const uploadUser = async (req: Request, res: Response) => {
         res.status(201).json(user);
     } catch (err) {
         res.status(500).json(err);
+    }
+}
+
+export const checkUser = async (req: Request, res: Response) => {
+    try {
+        const user = await User.findOne({ userId: req.params.userId });
+        if (user) {
+          res.json({ exists: true });
+        } else {
+          res.json({ exists: false });
+        }
+    } catch (error) {
+    res.status(500).send(error);
     }
 }

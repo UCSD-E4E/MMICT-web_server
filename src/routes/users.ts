@@ -1,4 +1,5 @@
 import express from "express";
+import { requireAuth } from '../middlewares/auth';
 import { getUsers, uploadUser, getUser, checkUser } from '../controllers/userController';
 
 const router = express.Router();
@@ -9,7 +10,7 @@ router
 
 router
   .route('/checkUser/:userId')
-  .get(checkUser)
+  .get(checkUser);
 
 router
   .route('/upload')
@@ -17,6 +18,7 @@ router
 
 router
   .route('/getUser/:userId')
-  .get(getUser)
+  .get(getUser);
+
 
 export const userRouter = router;

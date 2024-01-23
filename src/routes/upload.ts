@@ -1,8 +1,7 @@
 import express from "express";
+const router = express.Router();
 import { uploadToS3 } from '../controllers/uploadController';
 const upload = require('multer')();
-
-const router = express.Router();
 
 router
   .route('/upload')
