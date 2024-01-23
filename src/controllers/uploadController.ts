@@ -114,7 +114,7 @@ async function uploadLargeFile(params: any, file: any) {
                             Bucket: params.Bucket,
                             Key: params.Key,
                             UploadId: uploadId,
-                            Body: (params.Body).subarray(start,end),
+                            Body: (params.Body).slice(start,end),
                             PartNumber: i + 1,
                         }),
                     )
