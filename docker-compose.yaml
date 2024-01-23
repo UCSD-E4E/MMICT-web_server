@@ -18,6 +18,7 @@ services:
       - mongo
     environment:
       PORT: ${PORT}
+      MONGO_CONNECTION_STRING: mongodb://mongo:27017/mmict-test
   mongo:
     image: mongo
     ports:
