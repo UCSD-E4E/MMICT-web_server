@@ -20,3 +20,10 @@ Create a file called .env and paste in the following information:
 - AWS_BUCKET_NAME=mangrove-monitoring-images
 - AWS_ACCESS_KEY_ID=**ASK IN THE CHANNEL**
 - AWS_SECRET_ACCESS_KEY=**ASK IN THE CHANNEL**
+
+## Test file upload to AWS S3
+Stop the server using 1docker-compose down` and restart it using `docker-compose up -d`
+
+Use the following command with your file path
+`Curl -X POST -F "file=@/YOURFILEPATH" http://localhost:8000/upload`
+Verify the output using the console available to you through the docker container and the S3 bucket itself.
