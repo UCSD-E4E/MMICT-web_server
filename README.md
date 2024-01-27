@@ -25,5 +25,5 @@ Create a file called .env and paste in the following information:
 Stop the server using `docker-compose down` and restart it using `docker-compose up -d`
 
 Use the following command with your file path
-`Curl -X POST -F "file=@/YOURFILEPATH" http://localhost:8000/upload`
-Verify the output using the console available to you through the docker container and the S3 bucket itself.
+`Curl -X POST -F "file=@/YOURFILEPATH" http://localhost:8000/upload`and
+verify the output using the console available to you through the docker container and the S3 bucket itself.
