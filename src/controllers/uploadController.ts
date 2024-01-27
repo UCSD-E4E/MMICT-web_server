@@ -11,6 +11,7 @@ import {
     CompleteMultipartUploadCommand,
     AbortMultipartUploadCommand,
     S3Client,
+    S3ClientConfig,
 } from "@aws-sdk/client-s3";
   
 // Set up
@@ -20,16 +21,18 @@ require('dotenv').config();
 // Extract AWS credentials from environment variables
 const accessKeyId = process.env.AWS_ACCESS_KEY_ID;
 const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
+const region = process.env.AWS_REGION;
 
-// Create an S3 client with the extracted credentials and AWS region
+
+// Create S3 client with configured credentials and region
 const s3 = new S3Client({
     credentials: {
-        accessKeyId,
-        secretAccessKey,
+      accessKeyId: accessKeyId,
+      secretAccessKey: secretAccessKey,
     },
-    region: process.env.AWS_REGION
-});
-
+    region: region,
+  } as S3ClientConfig); // Add explicit type assertion
+console.log("client created");
 
 // Obtaining file size
 const maxSingleFileSize = 100 * 1024 * 1024; //100MB
@@ -51,6 +54,7 @@ export const uploadToS3 = async (req: Request, res: Response, next: NextFunction
                 Key: `${fileKey}.${fileType}`,
                 Body: file.buffer
             };
+            console.log("size and params done");
             // Determine what method of upload we need
             if (file.size > maxSingleFileSize) {
                 await uploadLargeFile(params, file);
@@ -58,7 +62,7 @@ export const uploadToS3 = async (req: Request, res: Response, next: NextFunction
             else {
                 await uploadSmallFile(params);
             }
-
+            console.log("Finished Upload to S3");
 
             const image = await Image.create({
                 name: fileName[0],
@@ -78,17 +82,14 @@ export const uploadToS3 = async (req: Request, res: Response, next: NextFunction
 
 
 async function uploadLargeFile(params: any, file: any) {
-  
-    const minPartSize = 5 * 1024 * 1024;
+    console.log("big file");
+    const minPartSize = 10 * 1024 * 1024;
      
     //Loop to find partSize
     let numParts = 1;
     while(Math.ceil(file.size / numParts) > minPartSize) {
         ++numParts;
     }
-
-    const main = async() => {
-        //todo
         let uploadId;
         try {
             const multipartUpload = await s3.send(
@@ -108,21 +109,22 @@ async function uploadLargeFile(params: any, file: any) {
             for (let i = 0; i < numParts; i++) {
                 const start = i * partSize;
                 const end = start + partSize;
-                uploadPromises.push(
-                    s3.send(
-                        new UploadPartCommand({
-                            Bucket: params.Bucket,
-                            Key: params.Key,
-                            UploadId: uploadId,
-                            Body: (params.Body).slice(start,end),
-                            PartNumber: i + 1,
+                    uploadPromises.push(
+                        s3.send(
+                            new UploadPartCommand({
+                                Bucket: params.Bucket,
+                                Key: params.Key,
+                                UploadId: uploadId,
+                                Body: (params.Body).slice(start,end),
+                                PartNumber: i + 1,
+                            }),
+                        )
+                        .then((d) => {
+                            console.log("Part", i+1, "uploaded");
+                            return d;
                         }),
-                    )
-                    .then((d) => {
-                        console.log("Part", i+1, "uploaded");
-                        return d;
-                    }),
-                );
+                   );
+
             }
             const uploadResults = await Promise.all(uploadPromises);
 
@@ -139,7 +141,6 @@ async function uploadLargeFile(params: any, file: any) {
                     },
                 }),
             );
-            // Verify output by downloading file
         } catch (err) {
             console.error(err);
 
@@ -153,11 +154,10 @@ async function uploadLargeFile(params: any, file: any) {
                 await s3.send(abortCommand);
             }
         }
-    };
 }
 
 async function uploadSmallFile(params: any) {
-    const main = async () => {
+        console.log("small file");
         const command = new PutObjectCommand({
           Bucket: params.Bucket,
           Key: params.Key,
@@ -169,5 +169,5 @@ async function uploadSmallFile(params: any) {
           } catch (err) {
             console.error(err);
           }
-        };
+        
 }
