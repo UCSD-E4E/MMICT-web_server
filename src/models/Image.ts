@@ -14,6 +14,7 @@ const PolygonSchema = new mongoose.Schema({
 
 const ImageSchema = new mongoose.Schema({
   name: { type: String, index: true, required: true },
+  userid: { type: String, index: true, required: true },
   reference: { type: String, required: true },
   labels: PolygonSchema,
 }, { minimize: false });

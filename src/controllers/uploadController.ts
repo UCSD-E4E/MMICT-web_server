@@ -39,9 +39,8 @@ const maxSingleFileSize = 100 * 1024 * 1024; //100MB
 
 export const uploadToS3 = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { username } = req.body;
-
         const files = req.files;
+        const userId = req.body.userid;
 
         files.forEach(async (file: any) => {
 
@@ -66,14 +65,15 @@ export const uploadToS3 = async (req: Request, res: Response, next: NextFunction
 
             const image = await Image.create({
                 name: fileName[0],
+                userid: userId,
                 reference: params.Key,
                 labels: null
             });
 
-            await User.findOneAndUpdate({ 'username' : username }, { $push: { images: image } }, { new: true });
+            await User.findOneAndUpdate({ 'userId' : userId }, { $push: { images: image } }, { new: true });
         });
     
-        res.status(200).json(await User.findOne({'username' : username}));
+        res.status(200).json(await User.findOne({'userId' : userId}));
     } catch (err) {
         next(err);
     }
