@@ -1,12 +1,8 @@
 import express from "express";
 import { requireAuth } from '../middlewares/auth';
-import { getUsers, uploadUser, getUser, checkUser } from '../controllers/userController';
+import {uploadUser, getUser, checkUser, getImages, getClassifications } from '../controllers/userController';
 
 const router = express.Router();
-
-router
-  .route('/')
-  .get(getUsers);
 
 router
   .route('/checkUser/:userId')
@@ -19,6 +15,14 @@ router
 router
   .route('/getUser/:userId')
   .get(getUser);
+
+router
+  .route('/getImages/:userId')
+  .get(getImages);
+
+router
+  .route('/getClassifications/:userId')
+  .get(getClassifications);
 
 
 export const userRouter = router;

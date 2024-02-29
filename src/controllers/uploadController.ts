@@ -3,6 +3,7 @@ import { Request, Response, NextFunction } from 'express';
 const uuid = require('uuid').v4;
 import { User } from '../models/User';
 import { Image } from '../models/Image';
+import { Classification } from '../models/Classification';
 
 require('dotenv').config();
 
@@ -17,8 +18,10 @@ const s3 = new AWS.S3({
 
 export const uploadToS3 = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const files = req.files;
+        //req as any may need a fix
+        const files = (req as any).files;
         const userId = req.body.userid;
+        console.log("files: ", files);
 
         files.forEach(async (file: any) => {
             const fileKey = uuid();
@@ -50,5 +53,23 @@ export const uploadToS3 = async (req: Request, res: Response, next: NextFunction
         res.status(200).json(await User.findOne({'userId' : userId}));
     } catch (err) {
         next(err);
+    }
+}
+
+export const uploadClassification = async (req: Request, res: Response) => {
+    try {
+        const userId = req.params.userId;
+        const classification = req.body;
+        console.log("userId: ", userId);
+        console.log("classification: ", classification);
+        const classificationObj = await Classification.create({
+            name: "idk",
+            userid: userId,
+            reference: "idk",
+            data: classification
+        });
+        await User.findOneAndUpdate({ 'userId' : userId }, { $push: { classifications: classificationObj } }, { new: true });
+    } catch (err) {
+        res.status(500).json(err);
     }
 }
