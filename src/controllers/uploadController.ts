@@ -18,10 +18,8 @@ const s3 = new AWS.S3({
 
 export const uploadToS3 = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        //req as any may need a fix
         const files = (req as any).files;
         const userId = req.body.userid;
-        console.log("files: ", files);
 
         files.forEach(async (file: any) => {
             const fileKey = uuid();

@@ -24,5 +24,4 @@ router
   .route('/getClassifications/:userId')
   .get(getClassifications);
 
-
 export const userRouter = router;

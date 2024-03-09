@@ -7,7 +7,7 @@ router
   .route('/upload')
   .post(upload.any(), uploadToS3);
 
-router
+  router
   .route('/upload/classification/:userId')
   .post(uploadClassification);
 

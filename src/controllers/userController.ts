@@ -22,7 +22,7 @@ export const uploadUser = async (req: Request, res: Response) => {
     }
 }
 
-// check that a user doesn't already exist by the userId
+// check that a user doesn't alreay exist by the userId
 export const checkUser = async (req: Request, res: Response) => {
     try {
         const user = await User.findOne({ userId: req.params.userId });
