@@ -20,3 +20,10 @@ Create a file called .env and paste in the following information:
 - AWS_BUCKET_NAME=mangrove-monitoring-images
 - AWS_ACCESS_KEY=**ASK IN THE CHANNEL**
 - AWS_SECRET_ACCESS_KEY=**ASK IN THE CHANNEL**
+
+## General Overview
+
+To run, simply do `npm run dev`  
+You will know it is working if you get the line  
+`Database connected: mongodb+srv://headHoncho:pmbrjDh5HgN2ySrZ@mmict.qvtwcsp.mongodb.net/?retryWrites=true&w=majority`.  
+/users is routed to have uploadUser, getUser, getImages, and getClassifications while /upload has uploadImage (uploadToS3) and uploadClassification.  

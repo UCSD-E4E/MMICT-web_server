@@ -39,7 +39,6 @@ export const checkUser = async (req: Request, res: Response) => {
 //get images based on userid
 export const getImages = async (req: Request, res: Response) => {
     try {
-        console.log("userId: ", req.params.userId);
         const pipeline = [
             { $match: { userId: req.params.userId } },
             { $lookup: {
@@ -77,7 +76,7 @@ export const getClassifications = async (req: Request, res: Response) => {
                 }
             },
             { $project: {
-                userId: 1,
+                //userId: 1,
                 classificationData: "$classificationDetails.data"  // Only include the 'data' field from each classification
               }
             }
