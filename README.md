@@ -25,5 +25,5 @@ Create a file called .env and paste in the following information:
 
 To run, simply do `npm run dev`  
 You will know it is working if you get the line  
-`Database connected: mongodb+srv://headHoncho:pmbrjDh5HgN2ySrZ@mmict.qvtwcsp.mongodb.net/?retryWrites=true&w=majority`.  
+`Database connected: DATABASESTRING`.  
 /users is routed to have uploadUser, getUser, getImages, and getClassifications while /upload has uploadImage (uploadToS3) and uploadClassification.  
