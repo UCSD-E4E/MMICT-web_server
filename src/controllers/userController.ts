@@ -40,9 +40,7 @@ export const checkUser = async (req: Request, res: Response) => {
 export const getImages = async (req: Request, res: Response) => {
     try {
         const pipeline = [
-            // filter so we only use data that fits our userId
             { $match: { userId: req.params.userId } },
-            // lookup all images with the same id as the images in the user
             { $lookup: {
                 from: "images",
                 localField: "images",
@@ -50,7 +48,6 @@ export const getImages = async (req: Request, res: Response) => {
                 as: "imageDetails"
               }
             },
-            // add the images to an array we will return
             { $project: {
                 userId: 1,
                 imageDetails: 1
@@ -70,20 +67,17 @@ export const getClassifications = async (req: Request, res: Response) => {
     try {
         console.log("userId: ", req.params.userId);
         const pipeline = [
-            // filter so we only use data that fits our userId
             { $match: { userId: req.params.userId } },
-            // lookup all Classifications with the same id as the images in the user
             { $lookup: {
-                from: "classifications",  
-                localField: "classifications", 
-                foreignField: "_id", 
+                from: "classifications",  // Use the correct collection name for classifications
+                localField: "classifications",  // Field in users collection
+                foreignField: "_id",  // Field in classifications collection
                 as: "classificationDetails"
                 }
             },
-            // add the classifications to an array we will return
             { $project: {
-                userId: 1,
-                classificationData: "$classificationDetails.data" 
+                //userId: 1,
+                classificationData: "$classificationDetails.data"  // Only include the 'data' field from each classification
               }
             }
         ];
