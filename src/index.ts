@@ -14,6 +14,10 @@ require('dotenv').config();
 const app = express();
 let ews = expressWs(app)
 
+//Notice this is a WebSocket url, after SSL certification ideally this will be at wss:// instead of ws://
+const IP_SERVICE_URL = 'ws://172.18.0.2:5000/ws-process'
+
+//This may or may not be necessary; this will be more clear once we try this over the production-ready network
 app.use(function (req, res, next) {
   res.setHeader(
     'Content-Security-Policy',
@@ -24,30 +28,22 @@ app.use(function (req, res, next) {
 
 ews.app.ws('/echo', function(ws, req) {
     ws.on('message', function(msg) {
-      console.log("Received: " + msg);
-      ws.send("Echoing: " + msg);
+      ws.send(msg);
     });
-    //console.log('socket', req.testing);
 });
 
-ews.app.ws('/ip', function(ws, req) {
-    const ws_ipService = new WebSocket('ws://172.18.0.2:5000/echo')
-
+ews.app.ws('/classify', function(ws, req) {
+    const ws_ipService = new WebSocket(IP_SERVICE_URL)
     ws_ipService.on('error', console.error);
-
-    ws_ipService.on('open', function open() {
-        ws_ipService.send('webserver connected to IP service');
-    });
-
+    //Send messages received from ip service back to frontend
     ws_ipService.on('message', function message(data) {
-        ws.send("(echo) IP Service -> Webserver -> " + data);
+        //Anything necessary in terms of uploading to Mongo will occur here
+        ws.send(data);
     });
+    //Send messages from frontend to ip service
     ws.on('message', function(msg) {
-      console.log("Recevied on Webserver: " + msg);
-      ws.send("Webserver Received: " + msg + ", sending to IP service");
       ws_ipService.send(msg);
     });
-    //console.log('socket', req.testing);
 });
 
 declare global {
