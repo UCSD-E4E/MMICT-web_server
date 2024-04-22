@@ -1,5 +1,4 @@
 import express from "express";
-import { requireAuth } from '../middlewares/auth';
 import { getUsers, uploadUser, getUser, checkUser } from '../controllers/userController';
 
 const router = express.Router();
