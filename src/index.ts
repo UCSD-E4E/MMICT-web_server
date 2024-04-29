@@ -15,13 +15,13 @@ const app = express();
 let ews = expressWs(app)
 
 //Notice this is a WebSocket url, after SSL certification ideally this will be at wss:// instead of ws://
-const IP_SERVICE_URL = 'ws://172.18.0.2:5000/ws-process'
+const IP_SERVICE_URL = `ws://${process.env.IP_ADDRESS}/ws-process`
 
 //This may or may not be necessary; this will be more clear once we try this over the production-ready network
 app.use(function (req, res, next) {
   res.setHeader(
     'Content-Security-Policy',
-    "connect-src 'self' ws://172.18.0.2:5000"
+    "connect-src 'self' ws://172.18.0.2:5002"
   );
   next();
 });
@@ -66,7 +66,7 @@ app.use(helmet());
 app.use(helmet.contentSecurityPolicy({
     //useDefaults:true,
     directives:{
-        "connect-src": ["'self'", "ws://172.18.0.2:5000"]
+        "connect-src": ["'self'", `ws://${process.env.IP_ADDRESS}`]
     }
 }));
 
