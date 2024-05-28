@@ -21,18 +21,19 @@ const IP_SERVICE_URL = `ws://${process.env.IP_ADDRESS}/ws-process`
 app.use(function (req, res, next) {
   res.setHeader(
     'Content-Security-Policy',
-    "connect-src 'self' ws://172.18.0.2:5002"
+    `connect-src 'self' ws://${process.env.IP_ADDRESS}`
   );
   next();
 });
 
-ews.app.ws('/echo', function(ws, req) {
+ews.app.ws('/ws/echo', function(ws, req) {
     ws.on('message', function(msg) {
       ws.send(msg);
     });
 });
 
-ews.app.ws('/classify', function(ws, req) {
+// Main classify enpoint, open websocket to IP
+ews.app.ws('/ws/classify', function(ws, req) {
     const ws_ipService = new WebSocket(IP_SERVICE_URL)
     ws_ipService.on('error', console.error);
     //Send messages received from ip service back to frontend
@@ -94,6 +95,7 @@ app.get('/', (req: Request, res: Response) => {
 
 app.use(errorHandler)
 
+// Express server listening on this port
 app.listen(process.env.PORT, () => {
     console.log(`listening on port ${process.env.PORT}`);
 });
