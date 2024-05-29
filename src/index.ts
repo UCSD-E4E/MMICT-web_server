@@ -11,8 +11,37 @@ import expressWs from 'express-ws';
 
 require('dotenv').config();
 
+declare global {
+    type $TSFixMe = any
+
+    namespace Express {
+        interface Request {
+            user?: $TSFixMe
+            files?: $TSFixMe
+        }
+    }
+}
+
 const app = express();
 let ews = expressWs(app)
+
+// enable cors
+app.use(cors());
+// use helmet for more security
+app.use(helmet());
+// parse json request body
+app.use(express.json());
+
+app.use(routes);
+
+app.use(errorHandler)
+
+app.use(helmet.contentSecurityPolicy({
+    //useDefaults:true,
+    directives:{
+        "connect-src": ["'self'", `ws://${process.env.IP_ADDRESS}`]
+    }
+}));
 
 //Notice this is a WebSocket url, after SSL certification ideally this will be at wss:// instead of ws://
 const IP_SERVICE_URL = `ws://${process.env.IP_ADDRESS}/ws-process`
@@ -26,6 +55,9 @@ app.use(function (req, res, next) {
   next();
 });
 
+// Websocket endpoints
+
+// Echo test endpoint
 ews.app.ws('/ws/echo', function(ws, req) {
     ws.on('message', function(msg) {
       ws.send(msg);
@@ -47,40 +79,14 @@ ews.app.ws('/ws/classify', function(ws, req) {
     });
 });
 
-declare global {
-    type $TSFixMe = any
-
-    namespace Express {
-        interface Request {
-            user?: $TSFixMe
-            files?: $TSFixMe
-        }
-    }
-}
-
-// enable cors
-app.use(cors());
-
-// use helmet for more security
-app.use(helmet());
-
-app.use(helmet.contentSecurityPolicy({
-    //useDefaults:true,
-    directives:{
-        "connect-src": ["'self'", `ws://${process.env.IP_ADDRESS}`]
-    }
-}));
-
-// parse json request body
-app.use(express.json());
-
-app.use(routes);
+// MongoDB Stuff
 
 mongoose.connect(process.env.MONGO_CONNECTION_STRING as string, {
     serverSelectionTimeoutMS: 5000
   }).catch((err: any) => console.log(err.reason));
 
 const db = mongoose.connection
+
 db.once('open', (_: any) => {
     console.log('Database connected:', process.env.MONGO_CONNECTION_STRING)
 })
@@ -92,8 +98,6 @@ db.on('error', (err: any) => {
 app.get('/', (req: Request, res: Response) => {
     res.status(200).send('<h1>It Works!</h1>');
 })
-
-app.use(errorHandler)
 
 // Express server listening on this port
 app.listen(process.env.PORT, () => {
