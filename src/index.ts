@@ -100,6 +100,12 @@ ews.app.ws('/ws/classify', function(ws, req) {
             ws.send('socket not in use, sending request without enqueuing')
             ws_ipService.send(msg)
             socketInUse = true
+
+            setInterval(() => {
+                ws.send('ping')
+                ws_ipService.send('ping')
+                console.log("sending ping")
+            }, 30000)
         })
         //Send messages received from ip service back to frontend
         ws_ipService.on('message', function message(data) {
