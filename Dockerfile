@@ -19,7 +19,7 @@ RUN npm run build
 
 # -------- Production Stage -------- 
 
-FROM node:16-alpine as production
+FROM --platform=linux/amd64 node:16-alpine as production
 
 # Set build time variable, set to our node 16 apline image
 ARG NODE_ENV=production
