@@ -12,6 +12,7 @@ import { Blob } from 'buffer';
 
 const zlib = require('node:zlib');
 const pingDelayMs = 30000
+const fs = require('fs');
 
 require('dotenv').config();
 
@@ -48,7 +49,8 @@ app.use(helmet.contentSecurityPolicy({
 }));
 
 //Notice this is a WebSocket url, after SSL certification ideally this will be at wss:// instead of ws://
-const IP_SERVICE_URL = `ws://${process.env.IP_ADDRESS}/ws-process`
+//const IP_SERVICE_URL = `ws://${process.env.IP_ADDRESS}/ws-process`
+const IP_SERVICE_URL = `wss://${process.env.IP_ADDRESS}/ws-process`
 var socketInUse : Boolean = false
 const socketRequestQueue : Array<WebSocket.RawData> = []
 
@@ -78,7 +80,12 @@ ews.app.ws('/ws/classify', function(ws, req) {
         ws.send('ping')
     }, pingDelayMs)
 
-    const ws_ipService = new WebSocket(IP_SERVICE_URL)
+    //const ws_ipService = new WebSocket(IP_SERVICE_URL)
+    //Deployment: pass ca cert to trust self-signed server cert
+    const ws_ipService = new WebSocket(IP_SERVICE_URL, {
+      ca: fs.readFileSync('./dist/certs/ca-cert.pem'),
+      rejectUnauthorized: true
+    })
 
     ws_ipService.on('open', () => {
         ws.send('opened socket to ip service successfully')

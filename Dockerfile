@@ -19,7 +19,8 @@ RUN npm run build
 
 # -------- Production Stage -------- 
 
-FROM --platform=linux/amd64 node:16-alpine as production
+#FROM --platform=linux/amd64 node:16-alpine as production
+FROM node:16-alpine as production
 
 # Set build time variable, set to our node 16 apline image
 ARG NODE_ENV=production
@@ -34,6 +35,10 @@ RUN npm ci --only=production
 
 # Copies the compiled output (dist directory) from the development stage to the production stage's working directory.
 COPY --from=development /usr/src/app/dist ./dist
+
+# Copy certs/ca-cert.pem into dist/certs/ folder
+RUN mkdir -p ./dist/certs
+COPY certs/ca-cert.pem ./dist/certs/ca-cert.pem
 
 # Our entrypoint, executes index.js inside /dist
 CMD ["node", "dist/index.js"]
